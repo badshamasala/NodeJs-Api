@@ -166,6 +166,10 @@ app.get('/users', async (req, res) => {
   }
 });
 
+app.get('/check', async (req, res) => {
+   res.json({message:"ok"});
+});
+
 const PORT = process.env.PORT || 3000;
 // app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 const start = async () => {
