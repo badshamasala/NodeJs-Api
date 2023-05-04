@@ -169,9 +169,10 @@ app.get('/users', async (req, res) => {
 app.get('/check', async (req, res) => {
    res.json({message:"ok"});
 });
+/* const client = new MongoClient(mongoUrl); */
 
 const PORT = /* process.env.PORT ||  */3000;
-// app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
 const start = async () => {
   try {
     await connectDB(mongoUrl);
