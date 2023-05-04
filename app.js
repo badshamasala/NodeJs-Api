@@ -170,11 +170,11 @@ app.get('/check', async (req, res) => {
    res.json({message:"ok"});
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = /* process.env.PORT ||  */3000;
 // app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URI);
+    await connectDB(mongoUrl);
     app.listen(PORT, () =>
       console.log(`Server is listening on port ${PORT}...`)
     );
