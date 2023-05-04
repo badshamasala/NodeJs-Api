@@ -170,11 +170,11 @@ app.get('/check', async (req, res) => {
    res.json({message:"ok"});
 });
 app.get('/', async (req, res) => {
-  res.json({message:"Hello Backend"});
+  res.json({message:"Hello"});
 });
 /* const client = new MongoClient(mongoUrl); */
 
-const PORT = /* process.env.PORT ||  */3000;
+const PORT = process.env.PORT | 3000;
 
 const start = async () => {
   try {
