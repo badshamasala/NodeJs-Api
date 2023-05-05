@@ -1,182 +1,49 @@
 import dotenv from "dotenv"
 import express from 'express';
 import bodyParser from 'body-parser';
-import multer from 'multer';
-import jwt from 'jsonwebtoken';
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
+import registerRoutes from './routes/register.js';
+import loginRoutes from './routes/login.js';
+import getUsersRoutes from './routes/getUsers.js';
+import updateUsernameRoutes from './routes/updateUsername.js';
+import updatePasswordRoutes from './routes/updatePassword.js';
+import {connect} from "mongoose";
+import setupSwagger from './swagger.js'
 dotenv.config()
-import { connect, Schema, model } from "mongoose";
+
 const connectDB = (url) => {
   return connect(url, {
     useNewUrlParser: true,
   })
 };
-import { MongoClient } from 'mongodb';
-
-const mongoUrl = 'mongodb+srv://Aarashid:badshamasala@cluster0.v0blgkl.mongodb.net/?retryWrites=true&w=majority';
+import path from 'path'
 const app = express();
-const upload = multer();
 
-const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: {
-    title: 'My API',
-    version: '1.0.0',
-    description: 'API documentation using Swagger',
-  },
-  servers: [
-    {
-      url: 'http://localhost:3000',
-    },
-  ],
-};
-
-const options = {
-  swaggerDefinition,
-  apis: ['./app.js',
-
-  ], // replace with the path to your API routes
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
-export default function setupSwagger(app) {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-}
+app.get('/',(req,res)=> {
+ res.sendFile('./public/myPage.html')
+})
+app.use('/',express.static('public'));
+app.use(bodyParser.json());
+app.use('/register',registerRoutes);
+app.use('/login',loginRoutes);
+app.use('/users',getUsersRoutes);
+app.use('/users/username',updateUsernameRoutes);
+app.use('/users/password',updatePasswordRoutes);
 setupSwagger(app)
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Register:
- *       type: object
- *       properties:
- *         username:
- *           type: string       
- *         password:
- *           type: string
- *           format: password
- *       required:
- *         - username
- *         - password
-*/
-
-/**
- * @swagger
- * /register:
- *   post:
- *     description: Register a User
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Register'
- *       required: true
- *     responses:
- *       '200':
- *         description: Success
- *       '400':
- *         description: Bad request
- *       '500':
- *         description: Internal server error
- */
 
 
-/**
- * @swagger
- * /users:
- *   get:
- *     description:  Users List
- *     responses:
- *        200:
- *          description: Success
- */
 
-
-const secretKey = 'mysecretkey';
-
-app.use(bodyParser.json());
-
-const testSchema = new Schema({
-  username: String,
-  password: String,
-});
-const User = model('User', testSchema);
-
-
-app.post('/register', upload.none(), async (req, res) => {
-  // Get username and password from request body
-  const { username, password } = req.body;
-  // Create new user object
-  const newUser = new User({
-    username,
-    password,
-  });
-  try {
-    const client = await MongoClient.connect(mongoUrl);
-    const collection = client.db().collection('users');
-    const existingUser = await collection.findOne({ username });
-    if (existingUser) {
-      res.status(400).json({ message: 'Username Already Exist' });
-    } else if (!username || !password) {
-      return res.status(400).json({ message: 'Username and password are required' });
-    } else {
-      res.json({ message: 'User Registered Sucessfully' });
-      await newUser.save()
-    }
-    client.close();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-  console.log(req.body)
-})
-
-app.post('/login', upload.none(), async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const client = await MongoClient.connect(mongoUrl);
-    const collection = client.db().collection('users');
-    const user = await collection.findOne({ username, password });
-    if (user) {
-      const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
-      res.json({ success: true, message: 'Login successful', token });
-    } else {
-      res.status(401).json({ success: false, message: 'Incorrect username or password' });
-    }
-    client.close();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
-
-app.get('/users', async (req, res) => {
-  try {
-    const client = await MongoClient.connect(mongoUrl);
-    const collection = client.db().collection('users');
-    const data = await collection.find({}).toArray();
-    res.json({ status: "ok", data });
-    client.close();
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
 
 const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
     app.listen(PORT, () =>
-      console.log(`Server is listening on port ${PORT}...`)
+      console.log(`Server is listening on port ${PORT}...`),
+     
     );
   } catch (error) {
     console.log("----------- error", error);
   }
 };
-
 start();
