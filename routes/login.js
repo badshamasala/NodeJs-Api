@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
   try {
     const user = await User.findOne({ username, password });
     if (user) {
-      const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+      const token = jwt.sign({ username }, secretey, { expiresIn: '1h' });
       res.json({ success: true, message: 'Login successful', loginAt: indianTimeString, token });
     } else {
       res.status(401).json({ success: false, message: 'Incorrect username or password' });
