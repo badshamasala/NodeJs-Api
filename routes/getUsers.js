@@ -10,7 +10,7 @@ router.get('/',async (req, res) => {
     try {
         const data = await User.find({});
       
-        res.json({ status: "ok", data ,legth: data.length});
+        res.json({ status: "ok", data ,length: data.length});
         
       } catch (err) {
         console.error(err);
