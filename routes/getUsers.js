@@ -1,6 +1,5 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
-
+import User from '../models/user_model.js';
 
 
 const router = express.Router();
@@ -9,10 +8,9 @@ const router = express.Router();
 
 router.get('/',async (req, res) => {
     try {
-        const client = await MongoClient.connect(process.env.MONGO_URI);
-        const collection = client.db().collection('users');
-        const data = await collection.find({}).toArray();
-        res.json({ status: "ok", data });
+        const data = await User.find({});
+      
+        res.json({ status: "ok", data ,legth: data.length});
         client.close();
       } catch (err) {
         console.error(err);

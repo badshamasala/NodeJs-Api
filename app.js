@@ -15,7 +15,7 @@ const connectDB = (url) => {
     useNewUrlParser: true,
   })
 };
-import path from 'path'
+
 const app = express();
 
 app.get('/',(req,res)=> {

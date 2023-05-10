@@ -1,33 +1,30 @@
 import express from 'express';
 import multer from 'multer';
-import { MongoClient } from 'mongodb';
 import jwt from 'jsonwebtoken';
-
-
+import User from '../models/user_model.js';
+import moment  from 'moment';
 const router = express.Router();
 const upload = multer();
 const secretKey = 'mysecretkey';
 
-router.post('/', upload.none(), async (req, res) => {
-    const { username, password } = req.body;
-    const now = new Date();
-  
-    try {
-      const client = await MongoClient.connect(process.env.MONGO_URI);
-      const collection = client.db().collection('users');
-      const user = await collection.findOne({ username, password });
-      if (user) {
-        const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
-        res.json({ success: true, message: 'Login successful', date: now.toISOString(), token });
-      } else {
-        res.status(401).json({ success: false, message: 'Incorrect username or password' });
-      }
-      client.close();
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Internal server error');
+router.post('/', async (req, res) => {
+  const { username, password } = req.body;
+  const indianTimeString = moment.utc().local().utcOffset('+05:30').format('YYYY-MM-DD hh:mm:ss A');
+  try {
+    const user = await User.findOne({ username, password });
+    if (user) {
+      const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+      res.json({ success: true, message: 'Login successful', loginAt: indianTimeString, token });
+    } else {
+      res.status(401).json({ success: false, message: 'Incorrect username or password' });
     }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+  }
 });
+
+
 
 /**
  * @swagger

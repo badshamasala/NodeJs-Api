@@ -5,44 +5,41 @@ import User from '../models/user_model.js';
 const router = express.Router();
 const upload = multer();
 
-const checkUsernameAvailability = async (err, req, res, next) => {
-    console.log(req.body)
-    try {
-      const user = await User.findOne({ username: req.body.username });
-  
-      if (user) {
-        return res.status(409).json({ message: 'Username is already taken' });
-      }
-  
-      next(); // Continue to the next middleware or route handler
-    } catch (err) {
-        console.log("err",err)
-      res.status(500).json({ message: err.message });
-    }
-  };
+const checkUsernameAvailability = async (req, res, next) => {
+  console.log(req.body)
+  try {
+      const usernameExists = await User.exists({ username: req.body.username });
 
-router.put('/:id',checkUsernameAvailability, upload.none(), async (req, res) => {
+      if (usernameExists) {
+          return res.status(409).json({ message: 'Username is already taken' });
+      }
+
+      next(); // Continue to the next middleware or route handler
+  } catch (err) {
+      console.log("err",err)
+      res.status(500).json({ message: err.message });
+  }
+};
+
+
+router.put('/:id', checkUsernameAvailability, upload.none(), async (req, res) => {
     try {
         const { id } = req.params;
         const { username } = req.body;
     
-        const user = await User.findById(id);
+        const user = await User.findByIdAndUpdate(id, { username, updated_at: new Date() }, { new: true });
     
         if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found' });
         }
     
-        user.username = username;
-        user.updated_at = new Date();
-    
-        await user.save();
-    
         res.json(user);
-      } catch (err) {
+    } catch (err) {
         console.log(err)
         res.status(500).json({ message: err.message });
-      }
+    }
 });
+
 
 /**
  * @swagger

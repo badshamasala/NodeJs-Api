@@ -8,25 +8,21 @@ const upload = multer();
 
 
 router.put('/:id', upload.none(), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { password } = req.body;
-    
-        const user = await User.findById(id);
-    
-        if (!user) {
+  try {
+      const { id } = req.params;
+      const { password } = req.body;
+  
+      const user = await User.findByIdAndUpdate(id, { password, updated_at: new Date() }, { new: true });
+  
+      if (!user) {
           return res.status(404).json({ message: 'User not found' });
-        }
-    
-        user.password = password;
-        user.updated_at = new Date();
-    
-        await user.save();
-    
-        res.json(user);
-      } catch (err) {
-        res.status(500).json({ message: err.message });
       }
+  
+      res.json(user);
+  } catch (err) {
+      console.log(err)
+      res.status(500).json({ message: err.message });
+  }
 });
 
 

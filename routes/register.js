@@ -18,18 +18,15 @@ router.post('/', upload.none(), async (req, res) => {
 
   });
   try {
-    const client = await MongoClient.connect(process.env.MONGO_URI);
-    const collection = client.db().collection('users');
-    const existingUser = await collection.findOne({ username });
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       res.status(400).json({ message: 'Username Already Exist' });
     } else if (!username || !password) {
       return res.status(400).json({ message: 'Username and password are required' });
     } else {
-      res.json({ message: 'User Registered Sucessfully' });
-      await newUser.save()
+      await newUser.save();
+      res.json({ message: 'User Registered Sucessfully', newUser });
     }
-    client.close();
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal server error');
