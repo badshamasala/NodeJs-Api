@@ -6,19 +6,19 @@ const router = express.Router();
 const upload = multer();
 
 const checkUsernameAvailability = async (req, res, next) => {
-  console.log(req.body)
-  try {
-      const usernameExists = await User.exists({ username: req.body.username });
+    console.log(req.body)
+    try {
+        const usernameExists = await User.exists({ username: req.body.username });
 
-      if (usernameExists) {
-          return res.status(409).json({ message: 'Username is already taken' });
-      }
+        if (usernameExists) {
+            return res.status(409).json({ message: 'Username is already taken' });
+        }
 
-      next(); // Continue to the next middleware or route handler
-  } catch (err) {
-      console.log("err",err)
-      res.status(500).json({ message: err.message });
-  }
+        next(); // Continue to the next middleware or route handler
+    } catch (err) {
+        console.log("err", err)
+        res.status(500).json({ message: err.message });
+    }
 };
 
 
@@ -26,13 +26,13 @@ router.put('/:id', checkUsernameAvailability, upload.none(), async (req, res) =>
     try {
         const { id } = req.params;
         const { username } = req.body;
-    
+
         const user = await User.findByIdAndUpdate(id, { username, updated_at: new Date() }, { new: true });
-    
+
         if (!user) {
-            return res.status(404).json({ message: 'User not found Please Check' });
+            return res.status(404).json({ message: 'User not found Please ' });
         }
-    
+
         res.json(user);
     } catch (err) {
         console.log(err)
