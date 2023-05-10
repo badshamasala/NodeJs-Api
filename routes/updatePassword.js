@@ -15,7 +15,7 @@ router.put('/:id', upload.none(), async (req, res) => {
       const user = await User.findByIdAndUpdate(id, { password, updated_at: new Date() }, { new: true });
   
       if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+          return res.status(404).json({ message: 'User not found Please Check' });
       }
   
       res.json(user);
