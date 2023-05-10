@@ -11,7 +11,7 @@ router.get('/',async (req, res) => {
         const data = await User.find({});
       
         res.json({ status: "ok", data ,legth: data.length});
-        client.close();
+        
       } catch (err) {
         console.error(err);
         res.status(500).send('Internal server error');
