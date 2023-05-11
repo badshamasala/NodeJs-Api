@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat App</title>
+  </head>
+  <body>
+    <h1>Chat App</h1>
+
+    <div id="messages"></div>
+
+    <form>
+      <input type="text" id="message" />
+      <button type="submit">Send</button>
+    </form>
+
+    <script>
+      // Connect to the WebSocket server
+      const ws = new WebSocket('ws://localhost:8080');
+
+      // Handle incoming messages
+      ws.onmessage = (event) => {
+        const messages = document.getElementById('messages');
+        const message = document.createElement('div');
+        message.innerText = JSON.parse(event.data) ;
+        messages.appendChild(message);
+      };
+
+      const sendMessage =()=>{
+        ws.send(JSON.stringify({name:messageInput.value}));
+      }
+
+      // Handle form submissions
+      const form = document.querySelector('form');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const messageInput = document.getElementById('message');
+        console.log(messageInput.value)
+        sendMessage()
+        messageInput.value = '';
+      });
+    </script>
+  </body>
+</html>

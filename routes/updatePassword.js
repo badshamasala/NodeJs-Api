@@ -1,24 +1,24 @@
 import express from 'express';
 import multer from 'multer';
 import User from '../models/user_model.js';
-
+import jwt from 'jsonwebtoken';
 const router = express.Router();
 const upload = multer();
+const secretKey = 'mysecretkey';
 
 
-
-router.put('/:id', upload.none(), async (req, res) => {
+router.put('/', upload.none(), async (req, res) => {
   try {
-      const { id } = req.params;
+      const token= req.headers.authorization.split(" ")[1]
       const { password } = req.body;
-  
-      const user = await User.findByIdAndUpdate(id, { password, updated_at: new Date() }, { new: true });
+      const {userId} = jwt.verify(token, secretKey);
+    
+      const user = await User.findByIdAndUpdate(userId, { password, updated_at: new Date() }, { new: true });
   
       if (!user) {
           return res.status(404).json({ message: 'User not found Please Check' });
       }
-  
-      res.json(user);
+     res.json(user);
   } catch (err) {
       console.log(err)
       res.status(500).json({ message: err.message });
