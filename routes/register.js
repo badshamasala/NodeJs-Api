@@ -2,7 +2,6 @@
 import express from 'express';
 import multer from 'multer';
 import User from '../models/user_model.js';
-import { MongoClient } from 'mongodb';
 
 const router = express.Router();
 const upload = multer();

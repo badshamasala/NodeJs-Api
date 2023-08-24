@@ -1,16 +1,15 @@
-import {Schema,model} from 'mongoose';
-import moment  from 'moment';
-import bcrypt from 'bcrypt';
+import { Schema, model } from 'mongoose';
+import moment from 'moment';
 const indianTimeString = moment.utc().local().utcOffset('+05:30').format('YYYY-MM-DD hh:mm:ss A');
 const userSchema = new Schema({
 
-  
+
   // User schema definition
   username: { type: String, required: true },
   password: { type: String, required: true },
   created_at: { type: String, default: indianTimeString },
   updated_at: { type: Date, default: null },
-},{versionKey:false});
+}, { versionKey: false });
 
 // userSchema.pre('save', async function (next) {
 //   try {
@@ -27,7 +26,5 @@ const userSchema = new Schema({
 //     return next(error);
 //   }
 // });
-
 const User = model('User', userSchema);
-
 export default User;
